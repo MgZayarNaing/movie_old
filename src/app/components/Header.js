@@ -1,12 +1,34 @@
-// src/app/components/Header.js
 import Link from 'next/link';
+import { useEffect, useState } from 'react';
+import { fetchCategories } from '../category/page'; // Ensure this path is correct
 
 const Header = () => {
+  const [categories, setCategories] = useState([]);
+  const [error, setError] = useState('');
+  const [dropdownOpen, setDropdownOpen] = useState(false);
+
+  useEffect(() => {
+    const getCategories = async () => {
+      try {
+        const categoriesData = await fetchCategories();
+        setCategories(categoriesData);
+      } catch (error) {
+        setError('Failed to fetch categories.');
+      }
+    };
+
+    getCategories();
+  }, []);
+
+  const toggleDropdown = () => {
+    setDropdownOpen(!dropdownOpen);
+  };
+
   return (
     <header>
       <nav className="bg-white border-gray-200">
         <div className="max-w-screen-xl flex flex-wrap items-center justify-between mx-auto p-4">
-          <Link href="https://flowbite.com/" className="flex items-center space-x-3 rtl:space-x-reverse">
+          <Link href="/" className="flex items-center space-x-3 rtl:space-x-reverse">
             <img src="https://flowbite.com/docs/images/logo.svg" className="h-8" alt="Flowbite Logo" />
             <span className="self-center text-2xl font-semibold whitespace-nowrap">Flowbite</span>
           </Link>
@@ -57,6 +79,25 @@ const Header = () => {
               </li>
               <li>
                 <Link href="/services" className="block py-2 px-3 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-blue-700 md:p-0">Services</Link>
+              </li>
+              <li className="relative">
+                <button onClick={toggleDropdown} className="block py-2 px-3 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-blue-700 md:p-0">Categories</button>
+                {error && <div className="text-red-500 text-sm mt-2">{error}</div>}
+                {dropdownOpen && (
+                  <ul className="absolute left-0 mt-1 space-y-1 bg-white border border-gray-100 rounded-lg shadow-lg">
+                    {categories && categories.length > 0 ? (
+                      categories.map((category) => (
+                        <li key={category.id}>
+                          <Link href={`/category/${category.id}`} className="block py-2 px-4 text-gray-900 hover:bg-gray-100">
+                            {category.name}
+                          </Link>
+                        </li>
+                      ))
+                    ) : (
+                      <li className="block py-2 px-4 text-gray-900">No categories available</li>
+                    )}
+                  </ul>
+                )}
               </li>
             </ul>
           </div>
