@@ -68,6 +68,7 @@ const RegisterPage = () => {
           />
           {error.email && <p id="email-error" className="mt-2 text-sm text-red-600">{error.email[0]}</p>}
         </div>
+        
         <div>
           <label htmlFor="password" className="block text-sm font-medium text-gray-700">Password</label>
           <input
